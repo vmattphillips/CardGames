@@ -7,19 +7,22 @@ namespace Games
     {
         private List<Card> _deck = new List<Card>();
 
+        private List<Card> _playerHand = new List<Card>();
+        private List<Card> _dealerHand = new List<Card>();
+
         public Blackjack(List<Card> deck)
         {
             _deck = deck;
         }
 
+        // The monolith function that handles the flow of the game.
+        // Might might break it up later
         public void Run()
         {
             Random rng = new Random();
 
-            List<Card> tempDeck = _deck;
-
-            List<Card> playerHand;
-            List<Card> dealerHand;
+            // Deck to reset the cards once a new game starts
+            List<Card> savedDeck = _deck;
 
             bool playerBust;
             bool dealerBust;
@@ -28,9 +31,9 @@ namespace Games
             while (true)
             {
                 // reset vars
-                _deck = tempDeck;
-                playerHand = new List<Card>();
-                dealerHand = new List<Card>();
+                _deck = savedDeck;
+                _playerHand = new List<Card>();
+                _dealerHand = new List<Card>();
 
                 playerBust = false;
                 dealerBust = false;
@@ -40,25 +43,25 @@ namespace Games
                 // Console.WriteLine(deck.List());
                 // deal cards to dealer and player from the top of the deck
                 Console.WriteLine("One card for you.");
-                _deck.Deal(playerHand);
+                _deck.Deal(_playerHand);
                 System.Threading.Thread.Sleep(1000);
-                Console.WriteLine($"*He deals you a {playerHand[0].ToString()} face-up*");
+                Console.WriteLine($"*He deals you a {_playerHand[0].ToString()} face-up*");
                 System.Threading.Thread.Sleep(1000);
                 Console.WriteLine("And one for me.");
-                _deck.Deal(dealerHand);
+                _deck.Deal(_dealerHand);
                 System.Threading.Thread.Sleep(1000);
-                Console.WriteLine($"*He deals himself a {dealerHand[0].ToString()} face-up*");
+                Console.WriteLine($"*He deals himself a {_dealerHand[0].ToString()} face-up*");
                 System.Threading.Thread.Sleep(1000);
                 Console.WriteLine("*He deals you each one more card face down, you, then himself.");
-                _deck.Deal(playerHand);
-                _deck.Deal(dealerHand);
+                _deck.Deal(_playerHand);
+                _deck.Deal(_dealerHand);
                 System.Threading.Thread.Sleep(1000);
 
                 // loop untill player decides to stay or busts
                 while (true)
                 {
                     // Player turn
-                    Console.WriteLine($"Your hand is:\n{playerHand.List()}");
+                    Console.WriteLine($"Your hand is:\n{_playerHand.List()}");
                     System.Threading.Thread.Sleep(1000);
                     Console.WriteLine("What would you like to do?\n[H]it or [S]tay?");
                     String? playerDecision = Console.ReadLine();
@@ -78,11 +81,11 @@ namespace Games
                     else if (playerDecision.ToUpper() == "H")
                     {
                         Console.WriteLine($"Hit? Sure thing.\nHe deals you a {_deck[0].GetValue()}.");
-                        _deck.Deal(playerHand);
+                        _deck.Deal(_playerHand);
                         System.Threading.Thread.Sleep(1000);
-                        if (Busted(playerHand))
+                        if (Busted(_playerHand))
                         {
-                            Console.WriteLine($"Aw, dammn, {CalculateTotal(playerHand).ToString()}, you busted.");
+                            Console.WriteLine($"Aw, dammn, {CalculateTotal(_playerHand).ToString()}, you busted.");
                             System.Threading.Thread.Sleep(1000);
                             playerBust = true;
                             break;
@@ -104,16 +107,16 @@ namespace Games
                         break;
                     }
                     // If their total is >=17 they must stay, <= 16 they must hit
-                    if (CalculateTotal(dealerHand) <= 16)
+                    if (CalculateTotal(_dealerHand) <= 16)
                     {
                         Console.WriteLine("I'll hit.");
                         System.Threading.Thread.Sleep(1000);
                         Console.WriteLine($"A {_deck[0].ToString()}. *He plays face up.*");
-                        _deck.Deal(dealerHand);
+                        _deck.Deal(_dealerHand);
                         System.Threading.Thread.Sleep(1000);
-                        if (Busted(dealerHand))
+                        if (Busted(_dealerHand))
                         {
-                            Console.WriteLine($"That brings my total to {CalculateTotal(dealerHand).ToString()}, I busted.");
+                            Console.WriteLine($"That brings my total to {CalculateTotal(_dealerHand).ToString()}, I busted.");
                             System.Threading.Thread.Sleep(1000);
                             dealerBust = true;
                             break;
@@ -123,7 +126,7 @@ namespace Games
                     {
                         Console.WriteLine("I'll Stay");
                         System.Threading.Thread.Sleep(1000);
-                        Console.WriteLine($"He reveals his face down card: {dealerHand[1]}");
+                        Console.WriteLine($"He reveals his face down card: {_dealerHand[1]}");
                         System.Threading.Thread.Sleep(1000);
                         break;
                     }
@@ -141,9 +144,9 @@ namespace Games
                 }
                 else
                 {
-                    Console.WriteLine($"Your Total: {CalculateTotal(playerHand)}\nMy Total: {CalculateTotal(dealerHand)}");
+                    Console.WriteLine($"Your Total: {CalculateTotal(_playerHand)}\nMy Total: {CalculateTotal(_dealerHand)}");
                     System.Threading.Thread.Sleep(1000);
-                    if (CalculateTotal(playerHand) > CalculateTotal(dealerHand))
+                    if (CalculateTotal(_playerHand) > CalculateTotal(_dealerHand))
                     {
                         Console.WriteLine("You got the higher total without busting, good game!");
                         System.Threading.Thread.Sleep(1000);
@@ -190,10 +193,19 @@ namespace Games
                     total += c.GetValueAsInt();
                 }
             }
-            // If they are over 21, change aces from an 11 to a 1
-            if (total > 21)
+
+            // If they are over 21, change aces from an 11 to a 1 until they are under
+            // This way some aces can be calculated as 11 and some a 1
+            for (int i = 0; i < NumberOfAces; i++)
             {
-                total -= 10*NumberOfAces;
+                if (total > 21)
+                {
+                    total -= 10;
+                }
+                else
+                {
+                    break;
+                }
             }
             //Console.WriteLine($"CALCULATED TOTAL: {total}");
             return total;

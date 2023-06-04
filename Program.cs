@@ -1,6 +1,7 @@
 ﻿using System;
 using Models;
 using Games;
+using Helpers;
 
 class Program
 {
@@ -9,24 +10,21 @@ class Program
         List<Card> deck = CreateDeck();
 
         Console.WriteLine("Welcome to the table, what would you like to play?\n");
-        Console.WriteLine("[B]lackjack\n[T]exas Hold'em\n");
+        Methods.Print("[B]lackjack\n[T]exas Hold'em\n");
         String? input = Console.ReadLine();
 
         switch (input.ToUpper())
         {
             case "B":
-                Console.WriteLine("Blackjack? Nice choice.\n");
-                System.Threading.Thread.Sleep(1000);
+                Methods.Print("Blackjack? Nice choice.\n");
                 Blackjack bj = new Blackjack(deck);
                 bj.Run();
                 return;
             case "T":
-                Console.WriteLine("Not implemented yet, closing application");
-                System.Threading.Thread.Sleep(1000);
+                Methods.Print("Not implemented yet, closing application");
                 return;
             default:
-                Console.WriteLine("Invalid input, closing application");
-                System.Threading.Thread.Sleep(1000);
+                Methods.Print("Invalid input, closing application");
                 return;
         }
     }

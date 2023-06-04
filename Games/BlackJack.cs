@@ -40,61 +40,55 @@ namespace Games
 
                 // shuffle deck
                 _deck.Shuffle();
-                // Console.WriteLine(deck.List());
+                // Methods.Print(deck.List());
                 // deal cards to dealer and player from the top of the deck
-                Console.WriteLine("One card for you.");
+                Methods.Print("One card for you.");
                 _deck.Deal(_playerHand);
-                System.Threading.Thread.Sleep(1000);
-                Console.WriteLine($"*He deals you a {_playerHand[0].ToString()} face-up*");
-                System.Threading.Thread.Sleep(1000);
-                Console.WriteLine("And one for me.");
+
+                Methods.Print($"*He deals you a {_playerHand[0].ToString()} face-up*");
+
+                Methods.Print("And one for me.");
                 _deck.Deal(_dealerHand);
-                System.Threading.Thread.Sleep(1000);
-                Console.WriteLine($"*He deals himself a {_dealerHand[0].ToString()} face-up*");
-                System.Threading.Thread.Sleep(1000);
-                Console.WriteLine("*He deals you each one more card face down, you, then himself.");
+
+                Methods.Print($"*He deals himself a {_dealerHand[0].ToString()} face-up*");
+
+                Methods.Print("*He deals you each one more card face down, you, then himself.");
                 _deck.Deal(_playerHand);
                 _deck.Deal(_dealerHand);
-                System.Threading.Thread.Sleep(1000);
 
                 // loop untill player decides to stay or busts
                 while (true)
                 {
                     // Player turn
-                    Console.WriteLine($"Your hand is:\n{_playerHand.List()}");
-                    System.Threading.Thread.Sleep(1000);
-                    Console.WriteLine("What would you like to do?\n[H]it or [S]tay?");
+                    Methods.Print($"Your hand is:\n{_playerHand.List()}");
+                    Methods.Print("What would you like to do?\n[H]it or [S]tay?");
                     String? playerDecision = Console.ReadLine();
                     if (String.IsNullOrEmpty(playerDecision))
                     {
-                        Console.WriteLine("INVALID INPUT.");
-                        System.Threading.Thread.Sleep(1000);
+                        Methods.Print("INVALID INPUT.");
                         continue;
                     }
                     else if (playerDecision.ToUpper() == "S")
                     {
                         // Do Nothing, mark flag true
-                        Console.WriteLine("Stay, gotcha.");
-                        System.Threading.Thread.Sleep(1000);
+                        Methods.Print("Stay, gotcha.");
                         break;
                     }
                     else if (playerDecision.ToUpper() == "H")
                     {
-                        Console.WriteLine($"Hit? Sure thing.\nHe deals you a {_deck[0].GetValue()}.");
+                        Methods.Print($"Hit? Sure thing.\nHe deals you a {_deck[0].GetValue()}.");
                         _deck.Deal(_playerHand);
-                        System.Threading.Thread.Sleep(1000);
+
                         if (Busted(_playerHand))
                         {
-                            Console.WriteLine($"Aw, dammn, {CalculateTotal(_playerHand).ToString()}, you busted.");
-                            System.Threading.Thread.Sleep(1000);
+                            Methods.Print($"Aw, dammn, {CalculateTotal(_playerHand).ToString()}, you busted.");
                             playerBust = true;
                             break;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("INVALID INPUT.");
-                        System.Threading.Thread.Sleep(1000);
+                        Methods.Print("INVALID INPUT.");
                         continue;
                     }
                 }
@@ -109,57 +103,49 @@ namespace Games
                     // If their total is >=17 they must stay, <= 16 they must hit
                     if (CalculateTotal(_dealerHand) <= 16)
                     {
-                        Console.WriteLine("I'll hit.");
-                        System.Threading.Thread.Sleep(1000);
-                        Console.WriteLine($"A {_deck[0].ToString()}. *He plays face up.*");
+                        Methods.Print("I'll hit.");
+                        Methods.Print($"A {_deck[0].ToString()}. *He plays face up.*");
                         _deck.Deal(_dealerHand);
-                        System.Threading.Thread.Sleep(1000);
+
                         if (Busted(_dealerHand))
                         {
-                            Console.WriteLine($"That brings my total to {CalculateTotal(_dealerHand).ToString()}, I busted.");
-                            System.Threading.Thread.Sleep(1000);
+                            Methods.Print($"That brings my total to {CalculateTotal(_dealerHand).ToString()}, I busted.");
                             dealerBust = true;
                             break;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("I'll Stay");
-                        System.Threading.Thread.Sleep(1000);
-                        Console.WriteLine($"He reveals his face down card: {_dealerHand[1]}");
-                        System.Threading.Thread.Sleep(1000);
+                        Methods.Print("I'll Stay");
+                        Methods.Print($"He reveals his face down card: {_dealerHand[1]}");
                         break;
                     }
                 }
 
                 if (playerBust)
                 {
-                    Console.WriteLine("Tough luck.");
-                    System.Threading.Thread.Sleep(1000);
+                    Methods.Print("Tough luck.");
                 }
                 else if (dealerBust)
                 {
-                    Console.WriteLine("Luck wasn't on my side, good game.");
-                    System.Threading.Thread.Sleep(1000);
+                    Methods.Print("Luck wasn't on my side, good game.");
                 }
                 else
                 {
-                    Console.WriteLine($"Your Total: {CalculateTotal(_playerHand)}\nMy Total: {CalculateTotal(_dealerHand)}");
-                    System.Threading.Thread.Sleep(1000);
+                    Methods.Print($"Your Total: {CalculateTotal(_playerHand)}\nMy Total: {CalculateTotal(_dealerHand)}");
+
                     if (CalculateTotal(_playerHand) > CalculateTotal(_dealerHand))
                     {
-                        Console.WriteLine("You got the higher total without busting, good game!");
-                        System.Threading.Thread.Sleep(1000);
+                        Methods.Print("You got the higher total without busting, good game!");
                     }
                     else
                     {
-                        Console.WriteLine("I got the higher total without busting, you played well though!");
-                        System.Threading.Thread.Sleep(1000);
+                        Methods.Print("I got the higher total without busting, you played well though!");
                     }
                 }
 
-                Console.WriteLine("Play again? Y/n");
-                System.Threading.Thread.Sleep(1000);
+                Methods.Print("Play again? Y/n");
+
                 String? playAgain = Console.ReadLine();
                 if (playAgain.ToUpper() != "Y")
                 {
@@ -207,7 +193,7 @@ namespace Games
                     break;
                 }
             }
-            //Console.WriteLine($"CALCULATED TOTAL: {total}");
+            //Methods.Print($"CALCULATED TOTAL: {total}");
             return total;
         }
     }
